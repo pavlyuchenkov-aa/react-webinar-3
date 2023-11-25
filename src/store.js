@@ -1,3 +1,4 @@
+import { generateUniqueCode } from "./utils";
 /**
  * Хранилище состояния приложения
  */
@@ -5,6 +6,10 @@ class Store {
   constructor(initState = {}) {
     this.state = initState;
     this.listeners = []; // Слушатели изменений состояния
+
+    this.codeGenerator = 1;
+    this.usedCodes = new Set();
+    this.state.list.forEach(item => this.usedCodes.add(item.code));
   }
 
   /**
@@ -42,11 +47,12 @@ class Store {
    * Добавление новой записи
    */
   addItem() {
+    const newCode = generateUniqueCode(this.usedCodes, this.codeGenerator);
     this.setState({
       ...this.state,
-      list: [...this.state.list, {code: this.state.list.length + 1, title: 'Новая запись'}]
-    })
-  };
+      list: [...this.state.list, { code: newCode, title: 'Новая запись' }]
+    });
+  }
 
   /**
    * Удаление записи по коду
@@ -64,15 +70,24 @@ class Store {
    * @param code
    */
   selectItem(code) {
+    const updatedList = this.state.list.map(item => {
+      if (item.code === code) {
+        if (!item.selected) {
+          item.selected = true;
+          item.selectCount = (item.selectCount || 0) + 1; 
+        } else {
+          item.selected = false;
+        }
+      } else {
+        item.selected = false;
+      }
+      return item;
+    });
+  
     this.setState({
       ...this.state,
-      list: this.state.list.map(item => {
-        if (item.code === code) {
-          item.selected = !item.selected;
-        }
-        return item;
-      })
-    })
+      list: updatedList
+    });
   }
 }
 

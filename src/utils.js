@@ -26,3 +26,33 @@ export function createElement(name, props = {}, ...children) {
 
   return element;
 }
+
+/**
+ * Генерация уникального кода для новой записи на основе использованных кодов
+ * @param {Set} usedCodes Набор использованных кодов
+ * @param {number} codeGenerator Генератор кодов начинающийся с 1
+ * @returns {number} возвращается уникальный код
+ */
+export function generateUniqueCode(usedCodes, codeGenerator) {
+  let uniqueCode = codeGenerator;
+  while (usedCodes.has(uniqueCode)) {
+    uniqueCode++;
+  }
+  usedCodes.add(uniqueCode);
+  return uniqueCode;
+}
+
+/**
+ * Отображение "раз" или "раза" в зависимости от значения selectCount
+ * @param {number} value значение selectCount
+ * @returns {Boolean} 
+ */
+export function checkLastDigit(value) {
+  if (([2, 3, 4].indexOf(value % 10) !== -1) 
+    && (Math.floor((value % 100) / 10) !== 1))
+  {
+      return true;
+  }
+
+  return false;
+}
